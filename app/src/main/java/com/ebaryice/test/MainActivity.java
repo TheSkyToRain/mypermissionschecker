@@ -1,65 +1,61 @@
 package com.ebaryice.test;
 
 import android.Manifest;
-import android.content.Intent;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.ebaryice.mypermissionschecker.PermissionChecker;
+import com.ebaryice.mypermissionschecker.PermissionListener;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     Button button;
     private static final String[] PERMISSIONS = new String[]{
-            Manifest.permission.CAMERA
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.INTERNET
     };
-    private PermissionChecker permissionChecker;
-    private int requestType;
+    PermissionChecker checker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        checker = new PermissionChecker(this);
+
         button = findViewById(R.id.button);
-
-        permissionChecker = new PermissionChecker(this);
-
         button.setOnClickListener(getPermission);
-
     }
 
     View.OnClickListener getPermission = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            requestType = 1;
-            if (permissionChecker.isLackPermissions(PERMISSIONS)){
-                permissionChecker.requestPermissions();
-            }else {
-                openCamera();
+            if (checker.checkIsOverMarshmallow()){
+                checker.requestPermissions(PERMISSIONS, new PermissionListener() {
+                    @Override
+                    public void onGranted() {
+                        Toast.makeText(MainActivity.this,"授权成功",Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onDenied(List<String> deniedPermissions) {
+                        Toast.makeText(MainActivity.this,"用户拒绝"+deniedPermissions.toString()+"授权",Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onShouldShowRationale(List<String> deniedPermissions) {
+                        Toast.makeText(MainActivity.this,"建议在设置中开启"+deniedPermissions.toString()+"权限，否则软件无法正常使用",Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
     };
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
-            case PermissionChecker.PERMISSION_REQUEST_CODE:
-                if (permissionChecker.hasAllPermissionsGranted(grantResults)){
-                    if (requestType == 1){
-                        openCamera();
-                    }
-                }else {
-                    permissionChecker.showDialog();
-                }
-                break;
-        }
-    }
-    private void openCamera(){
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivity(intent);
-    }
 }

@@ -1,56 +1,55 @@
 package com.ebaryice.mypermissionschecker;
 
-import android.app.Activity;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-
-/**
- * Created by EbaryIce on 2018/5/9/009.
- */
+import android.os.Build;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 
 public class PermissionChecker {
+    private static final String TAG = "PermissionChecker";
 
-    public static final int PERMISSION_REQUEST_CODE = 0;
-    private String[] permissions;
-    private Activity activity;
-    private PermissionDialog dialog;
+    private PermissionFragment fragment;
 
-    public PermissionChecker(Activity activity) {
-        this.activity = activity;
-        this.dialog = new PermissionDialog(activity);
+    public PermissionChecker(FragmentActivity activity){
+        fragment = getPermissionFragment(activity);
     }
 
-    public boolean isLackPermissions(String[] permissions) {
-        this.permissions = permissions;
-        Checker checker = new Checker(activity);
-        return checker.lacksPermissions(permissions);
-    }
+    private PermissionFragment getPermissionFragment(FragmentActivity activity) {
+        PermissionFragment fragment = (PermissionFragment) activity.getSupportFragmentManager().findFragmentByTag(TAG);
 
-    public void requestPermissions() {
-        ActivityCompat.requestPermissions(activity, permissions, PERMISSION_REQUEST_CODE);
-    }
+        boolean singleInstance = fragment == null;
 
-    public void setTitle(String title){
-        dialog.setTitle(title);
-    }
-
-    public void setMessage(String message){
-        dialog.setMessage(message);
-    }
-
-    public boolean hasAllPermissionsGranted(@NonNull int[] grantResults) {
-        for (int grantResult : grantResults) {
-            if (grantResult == PackageManager.PERMISSION_DENIED) {
-                return false;
-            }
+        if (singleInstance){
+            fragment = new PermissionFragment();
+            FragmentManager fragmentManager = activity.getSupportFragmentManager();
+            fragmentManager.
+                    beginTransaction()
+                    .add(fragment,TAG)
+                    .commit();
+            fragmentManager.executePendingTransactions();
         }
-        return true;
+
+        return fragment;
     }
 
-    public void showDialog(){
-        dialog.init();
-        dialog.show();
+    /**
+     * 发起权限申请
+     * @param permissions
+     * @param listener
+     */
+    public void requestPermissions(String[] permissions,PermissionListener listener){
+        fragment.setListener(listener);
+        fragment.requestPermissions(permissions);
     }
 
+    /**
+     * 判断当前Android版本是否高于6.0
+     * @return
+     */
+    public boolean checkIsOverMarshmallow(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            return true;
+        }else {
+            return false;
+        }
+    }
 }

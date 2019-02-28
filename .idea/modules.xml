@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mypermissionschecker/mypermissionschecker.iml" filepath="$PROJECT_DIR$/mypermissionschecker/mypermissionschecker.iml" />
-      <module fileurl="file://$PROJECT_DIR$/test.iml" filepath="$PROJECT_DIR$/test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mypermissionschecker.iml" filepath="$PROJECT_DIR$/mypermissionschecker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mypermissionschecker/mypermissionschecker-mypermissionschecker.iml" filepath="$PROJECT_DIR$/mypermissionschecker/mypermissionschecker-mypermissionschecker.iml" />
     </modules>
   </component>
 </project>
