@@ -8,12 +8,14 @@ allprojects {
 			...
 			maven { url 'https://jitpack.io' }
 		}
-	}```
+	}
+```
 ##### Step 2.Add the dependency:
 ```
 dependencies {
   implementation 'com.github.TheSkyToRain:mypermissionschecker:1.1.0'
-  }```
+  }
+```
 ##### Step 3.Call method:
 ```
 PermissionChecker pc = new PermissionChecker(this);
@@ -34,3 +36,5 @@ pc.requestPermissions(permissions, new PermissionListener() {
             }
         });
 ```
+
+Above is all.
